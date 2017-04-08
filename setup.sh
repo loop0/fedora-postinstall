@@ -17,7 +17,13 @@ sudo systemctl disable abrt-xorg.service
 sudo dnf -y remove firefox evolution rhythmbox
 
 # Install extra repos, update and install needed packages
-sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+	https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+pushd /etc/yum.repos.d
+sudo wget https://raw.githubusercontent.com/loop0/fedora-postinstall/master/google-chrome.repo
+sudo wget https://raw.githubusercontent.com/loop0/fedora-postinstall/master/fedora-spotify.repo
+popd
+
 sudo dnf -y update
 sudo dnf -y install google-chrome vim gitg spotify-client python2-virtualenv docker
 
