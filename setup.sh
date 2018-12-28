@@ -5,37 +5,48 @@ set -e
 sudo bash -c 'echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf'
 sudo bash -c 'echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf'
 
-# Disable abrt stuff
-sudo systemctl stop abrt*
-sudo systemctl disable abrt-ccpp.service 
-sudo systemctl disable abrtd.service 
-sudo systemctl disable abrt-oops.service 
-sudo systemctl disable abrt-vmcore.service 
-sudo systemctl disable abrt-xorg.service 
-
 # Remove unused packages
-sudo dnf -y remove firefox evolution rhythmbox
+sudo dnf -y remove evolution \
+				   rhythmbox \
+				   docker \
+				   docker-client \
+				   docker-client-latest \
+				   docker-common \
+				   docker-latest \
+				   docker-latest-logrotate \
+				   docker-logrotate \
+				   docker-selinux \
+				   docker-engine-selinux \
+				   docker-engine
+
+# Install Microsoft keys
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
 # Install extra repos, update and install needed packages
-sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-	https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 pushd /etc/yum.repos.d
 sudo wget https://raw.githubusercontent.com/loop0/fedora-postinstall/master/google-chrome.repo
-sudo wget https://raw.githubusercontent.com/loop0/fedora-postinstall/master/fedora-spotify.repo
+sudo wget https://raw.githubusercontent.com/loop0/fedora-postinstall/master/vscode.repo
 popd
 
 sudo dnf -y update
-sudo dnf -y install google-chrome vim gitg spotify-client python2-virtualenv docker
+sudo dnf -y install dnf-plugins-core
+
+# Add docker-ce repository
+sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+# TODO: Remove it after docker starts supporting Fedora 29 as stable
+sudo dnf config-manager --set-enabled docker-ce-test
+
+sudo dnf -y install google-chrome \
+					gitg \
+					python2-virtualenv \
+					python3-virtualenv \
+					golang \
+					docker-ce \
+					code
 
 # Setup docker
 sudo systemctl enable docker
 sudo groupadd docker && sudo gpasswd -a ${USER} docker && sudo systemctl restart docker
-newgrp docker
+sudo mv /var/lib/docker /home/docker
+sudo ln -s /home/docker /var/lib/docker
 sudo systemctl start docker
-
-# Install necessary udev rules for Fido U2F
-pushd /etc/udev/rules.d
-sudo wget https://raw.githubusercontent.com/Yubico/libu2f-host/master/70-u2f.rules
-sudo udevadm control --reload-rules
-sudo udevadm trigger
-popd
