@@ -19,34 +19,39 @@ sudo dnf -y remove evolution \
 				   docker-engine-selinux \
 				   docker-engine
 
-# Install Microsoft keys
-sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
-# Install extra repos, update and install needed packages
-pushd /etc/yum.repos.d
-sudo wget https://raw.githubusercontent.com/loop0/fedora-postinstall/master/google-chrome.repo
-sudo wget https://raw.githubusercontent.com/loop0/fedora-postinstall/master/vscode.repo
-popd
+# VS Code
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
 
 sudo dnf -y update
 sudo dnf -y install dnf-plugins-core
 
-# Add docker-ce repository
+# Google Chrome
+sudo dnf -y install fedora-workstation-repositories
+sudo dnf -y config-manager --set-enabled google-chrome
+
+# Docker
 sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
-# TODO: Remove it after docker starts supporting Fedora 29 as stable
+# TODO: Remove it after docker starts supporting Fedora 30 as stable
 sudo dnf config-manager --set-enabled docker-ce-test
 
-sudo dnf -y install google-chrome \
+sudo dnf -y install google-chrome-stable \
 					gitg \
 					python2-virtualenv \
 					python3-virtualenv \
 					golang \
 					docker-ce \
-					code
+					code \
+					i3 \
+					vim \
+					feh \
+					ImageMagick
 
-# Setup docker
+# Configure docker
 sudo systemctl enable docker
-sudo groupadd docker && sudo gpasswd -a ${USER} docker && sudo systemctl restart docker
+sudo sudo gpasswd -a ${USER} docker
+sudo systemctl stop docker
 sudo mv /var/lib/docker /home/docker
 sudo ln -s /home/docker /var/lib/docker
 sudo systemctl start docker
