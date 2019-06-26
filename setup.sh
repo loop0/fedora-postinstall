@@ -36,17 +36,25 @@ sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/dock
 # TODO: Remove it after docker starts supporting Fedora 30 as stable
 sudo dnf config-manager --set-enabled docker-ce-test
 
+sudo dnf -y install \
+	https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+	https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
 sudo dnf -y install google-chrome-stable \
-					gitg \
-					python2-virtualenv \
-					python3-virtualenv \
-					golang \
-					docker-ce \
-					code \
-					i3 \
-					vim \
-					feh \
-					ImageMagick
+	gitg \
+	python2-virtualenv \
+	python3-virtualenv \
+	golang \
+	docker-ce \
+	code \
+	i3 \
+	i3lock \
+	vim \
+	feh \
+	ImageMagick \
+	scrot \
+	light \
+	ffmpeg
 
 # Configure docker
 sudo systemctl enable docker
