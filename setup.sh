@@ -42,7 +42,8 @@ sudo dnf -y install google-chrome-stable \
 	python3-virtualenv \
 	golang \
 	docker-ce \
-	code
+	code \ 
+	akmod-nvidia
 
 # Configure docker
 sudo systemctl enable docker
